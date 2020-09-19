@@ -198,13 +198,16 @@
 			</div>
 			<p>Map authored by Joyia Williams</p>
 	</section>
+</body>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 		crossorigin=""></script>
 	<!-- Load a Leaflet plugin to provide geolocation. -->
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"
-        charset="utf-8"></script>
+		charset="utf-8"></script>
+		<!-- add the simple stats library -->
+<script src="https://unpkg.com/simple-statistics@7.2.0/dist/simple-statistics.min.js"></script>
      <!-- add jQuery JS script -->
 	<script>
 	fetch('data/DataD15.json')
@@ -416,9 +419,6 @@ if (L.Browser.mobile) {
 }
  
 }
-
- 
-
 
 /* --------------- Toggle on/off info footer content ---------------  */
 var clicked = false // start with false condition
