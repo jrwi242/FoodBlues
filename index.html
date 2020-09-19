@@ -214,7 +214,7 @@
 		var attributeValue = "MedianFamilyIncome",
 		normValue = "POP2010";
 		
-	fetch('data/DataD15.json')
+	fetch('data/food_data.geojson')
 	// fetching Census Data
 	.then(function (response) {
 		console.log(response)
@@ -241,14 +241,38 @@ if (response.ok) {
     // Make call to update map
     drawMap(dataLayer);
 	})
+	.then(function () {
+		drawAnotherLayer()
+	})
+
+	// define fuction draw another layer
+	function drawAnotherLayer() {
+		fetch("data/us_states_20m.geojson").then(function (response) {
+			if (response.ok) {
+				return response.json()
+			}
+		})
+		.then(function(data) {
+			L.geoJson(data,{
+				style: function (feature) {
+					return {
+						color: '#444',
+						weight: 2,
+						fillOpacity: 0,
+						interactive: false
+					};
+				}
+			}).addTo(map)
+		})
+	}
 	var options = {
-    center: [37.8, -85.8],
-    zoom: 7.4,
+    center: [39.8, -98.6],
+    zoom: 4,
     zoomSnap: .1,
     zoomControl: false
 }
 var map = L.map('map', options);
-$.getJSON("Data/DataD15.json", function(data) {
+$.getJSON("data/food_data.geojson", function(data) {
 L.geoJson(data, {
   style: function(feature) {
     return {
@@ -263,46 +287,6 @@ L.geoJson(data).addTo(map);
 });
 
 map.addControl( L.control.zoom({ position: 'topright' }));
-// data paramter is not accessible here! (fixed)
-
-var attributeValue = "CENSUSTRACT" ,
-normValue = "STATE";
-// Make the call to external data
-fetch('data/DataD15.json')
-  // When the server responds, let's evaluate the response
-  .then(function (response) {
-    // Look at the response
-    console.log(response)
-    // The API call was successful!
-    if (response.ok) {
-        // Parse the response as a JSON and return it
-        return response.json() 
-    } else { 
-        // Present the numeric status code if it fails. 
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-  })
-  // Pass the returned value of previous .then() method as 'data'
-  .then(function (data) {
-    // Draw basic map from data
-    var dataLayer = L.geoJson(data, {
-      style: function (feature) {
-        return {
-          color: 'white',
-          weight: 1,
-          fillOpacity: 1,
-          fillColor: '#1f78b4'
-        };
-      }
-    }).addTo(map)
-    // Make call to update map
-    drawMap(dataLayer);
-  })
-
-  .then(function () {
-    // Draw another layer after the previous .then() resolves
-    drawAnotherLayer()
-  })
   
   // Define a function that fetches data and then draws another layer
   function drawAnotherLayer() {
