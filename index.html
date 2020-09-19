@@ -199,6 +199,7 @@
 			<p>Map authored by Joyia Williams</p>
 	</section>
 </body>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -210,6 +211,9 @@
 <script src="https://unpkg.com/simple-statistics@7.2.0/dist/simple-statistics.min.js"></script>
      <!-- add jQuery JS script -->
 	<script>
+		var attributeValue = "MedianFamilyIncome",
+		normValue = "POP2010";
+		
 	fetch('data/DataD15.json')
 	// fetching Census Data
 	.then(function (response) {
@@ -330,8 +334,6 @@ layer.setStyle({
   fillColor: getColor(props[attributeValue]/props[normValue], breaks)
 });
 });
-
-
 function getClassBreaks (dataLayer) {
 // empty array to hold all our values
 var values = [];
@@ -354,7 +356,7 @@ var clusters = ss.ckmeans(values, 5);
 var breaks = clusters.map(function(cluster){
   return [cluster[0],cluster.pop()];
 });
-return breaks; // return Array of your break values
+console.log (breaks); // return Array of your break values
 } // end getClassBreaks function
 
 function getColor(d, breaks) {
