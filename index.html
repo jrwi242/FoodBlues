@@ -19,9 +19,10 @@
 		body {
 			margin: 0;
 			padding: 0;
+			background: #222;
 			font-family: 'Quicksand', sans-serif;
 			font-size: 100%;
-			color: #3d3d3d;
+			color: #ddd; /* light */
 		}
 
 		h1 {
@@ -54,6 +55,7 @@
 			top: 0;
 			bottom: 0;
 			width: 100%;
+			background: rgba(63, 63, 63, 0.9); /* with transp */
 		}
 
 		#about {
@@ -76,11 +78,12 @@
 		}
 
 		a {
-			color: #005daa;
+			color: #004A8B;
 			text-decoration: none;
 		}
 
 		a:hover {
+			color: rgb(67, 69, 71);
 			text-decoration: underline;
 		}
 
@@ -122,7 +125,41 @@
 				display: none;
 			}
 		}
+.legend {
+      padding: 6px 8px;
+      font-size: 1em;
+      /* Use transparency to blend elements. */ 
+      border: 2px solid rgba(244, 244, 244, 0.2);
+      background: rgba(100, 100, 100, 0.9);
+      color: rgba(244, 244, 244, 0.8);
+      border-radius: 5px;
+    }
 
+    .legend h3 {
+      font-size: 1.1em;
+      font-weight: bolder;
+      color: #ddd; /* Light */
+      margin: 0 0 10px 0;
+    }
+	.legend span {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin: 0 10px 4px 0;
+}
+.legend label {
+    font-size: 1.1em;
+}
+.legend label:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+	.leaflet-bar a {
+      /* Override the default style for Leaflet's zoom  */
+      background: rgba(100, 100, 100, 0.9);
+      color: rgba(244, 244, 244, 0.8);
+    }
 		#info-button {
     padding: 8px 5px;
     font-size: 0.9em;
@@ -174,6 +211,7 @@
     height: 10vh;
     margin: 10px;
 }
+
 	</style>
 </head>
 
@@ -290,7 +328,7 @@ map.addControl( L.control.zoom({ position: 'topright' }));
   
   // Define a function that fetches data and then draws another layer
   function drawAnotherLayer() {
-    fetch("data/us_states_500k.geojson").then(function (response) {
+    fetch("data/us_states_20m.geojson").then(function (response) {
       if (response.ok) {
         // Parse the response as a JSON and return it
         return response.json() 
@@ -342,6 +380,15 @@ var breaks = clusters.map(function(cluster){
   return [cluster[0],cluster.pop()];
 });
 console.log (breaks); // return Array of your break values
+if (L.Browser.mobile) {
+  // if true use popup
+  layer.bindPopup(toolTipInfo);
+  } else {
+  // if false use tooltip
+  layer.bindTooltip(toolTipInfo, {
+    sticky: true
+  });
+};
 } // end getClassBreaks function
 
 function getColor(d, breaks) {
@@ -358,6 +405,7 @@ function getColor(d, breaks) {
     return '#045a8d'
   }
 } // end getColor
+
 function drawLegend(breaks){
 
 // create a new Leaflet control object, and position it top left
@@ -393,16 +441,9 @@ legend.onAdd = function () {
 
 // add the legend to the map
 legend.addTo(map);
-if (L.Browser.mobile) {
-  // if true use popup
-  layer.bindPopup(toolTipInfo);
-  } else {
-  // if false use tooltip
-  layer.bindTooltip(toolTipInfo, {
-    sticky: true
-  });
-};
+
 }
+
 /* --------------- Toggle on/off info footer content ---------------  */
 var clicked = false // start with false condition
 function myInfo() {
