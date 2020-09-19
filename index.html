@@ -200,58 +200,64 @@ map.addControl( L.control.zoom({ position: 'topright' }));
 
 var attributeValue = "CENSUSTRACT" ,
 normValue = "STATE";
-var countyLayer = $.getJSON("data/DataD15", function(data) {
-
-  var dataLayer = L.geoJson(data, {
-    style: function(feature) {
-      return {
-        color: '#444',
-        weight: 1,
-        fillOpacity: 1,
-        fillColor: '#1f78b4'
-      };
+// Make the call to external data
+fetch('data/DataD15.json')
+  // When the server responds, let's evaluate the response
+  .then(function (response) {
+    // Look at the response
+    console.log(response)
+    // The API call was successful!
+    if (response.ok) {
+        // Parse the response as a JSON and return it
+        return response.json() 
+    } else { 
+        // Present the numeric status code if it fails. 
+        throw new Error(`HTTP error! status: ${response.status}`);
     }
   })
-// call to new function here gets data out of the
- // find zoom extent from new layer
- var zoomExtent = dataLayer.getBounds()
+  // Pass the returned value of previous .then() method as 'data'
+  .then(function (data) {
+    // Draw basic map from data
+    var dataLayer = L.geoJson(data, {
+      style: function (feature) {
+        return {
+          color: 'white',
+          weight: 1,
+          fillOpacity: 1,
+          fillColor: '#1f78b4'
+        };
+      }
+    }).addTo(map)
+    // Make call to update map
+    drawMap(dataLayer);
+  })
 
-// Apply the extent to our map with a custom property
-// that says max zoom on load will not exceed 8
-// which adds margin around the state.
-map.fitBounds(zoomExtent, {
-    maxZoom: 8
-})
-dataLayer.addTo(map)
-// call back function
-drawMap(dataLayer);
-});
-
-// Tell jQuery to wait until data is loaded before executing a function
-$.when(countyLayer).done(function () {
-  // load, filter, and style the state outline 
-  $.getJSON("data/us_states_500k.geojson", function (data) {
-
-      var stateLayer = L.geoJson(data, {
+  .then(function () {
+    // Draw another layer after the previous .then() resolves
+    drawAnotherLayer()
+  })
+  
+  // Define a function that fetches data and then draws another layer
+  function drawAnotherLayer() {
+    fetch("data/us_states_500k.geojson").then(function (response) {
+      if (response.ok) {
+        // Parse the response as a JSON and return it
+        return response.json() 
+      }
+    })
+    .then(function(data) {
+      L.geoJson(data,{
         style: function (feature) {
           return {
-            // Let's experiment with these colors shortly
-            // color: '#222222', // Gray
-            color: '#ffffff', // White
-            // Make line weight larger than the county outline
+            color: '#444',
             weight: 2,
             fillOpacity: 0,
-            // This property allows us control interactivty of layer
             interactive: false
           };
-        },
-      });
-
-      // Add layer to map!
-      stateLayer.addTo(map)
-
-  });
-});
+        }
+      }).addTo(map)
+    })
+  }
 
 function drawMap (dataLayer) {
 var breaks = getClassBreaks(dataLayer);
