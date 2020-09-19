@@ -127,7 +127,7 @@
 
 <body>
 
-	<h1>Awesome map title!</h1>
+	<h1>2015 United States Food Desert Map</h1>
 
 	<div id='map'></div>
 
@@ -136,58 +136,21 @@
 		<p>Additional information about <a href="#">the data</a> and map goes here. Lorem ipsum dolor sit amet,
 			consectetur adipiscing elit. Duis urna magna, maximus nec laoreet sit amet, dictum ultricies nibh. Ut id
 			auctor lacus. Nam a dolor et justo luctus luctus. </p>
-		<p>Map authored by me, MY NAME</p>
+		<p>Map authored by Joyia Williams</p>
 	</section>
-
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 		crossorigin=""></script>
 	<!-- Load a Leaflet plugin to provide geolocation. -->
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"
-		charset="utf-8"></script>
+        charset="utf-8"></script>
+     <!-- add jQuery JS script -->
+
+
+
 	<script>
-		var options = {
-			center: [38.038685, -84.504164],
-			zoom: 12,
-			zoomControl: false
-		}
-
-		var locate_options = {
-			position: 'topright',
-			strings: {
-				title: "Show me where I am, yo!"
-			}
-		}
-
-		var map = L.map('map', options);
-
-		// add zoom control to top right window position
-		L.control.zoom({
-			position: 'topright'
-		}).addTo(map);
-
-		// add geolocation control to top right window position (Leaflet can handle multiple top-right elements)
-		L.control.locate(locate_options).addTo(map);
-
-		// Get basemap URL from Leaflet Providers
-		var basemap_url = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-
-		// Get basemap attributes from Leaflet Providers
-		var basemap_attributes = {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-			subdomains: 'abcd',
-			maxZoom: 19
-		};
-		// requests some map tiles
-		var tiles = L.tileLayer(basemap_url, basemap_attributes);
-
-		map.addLayer(tiles);
-
-		var message = '<h2>University of Kentucky!</h2>Department of Geography';
-
-		L.marker(map.getCenter())
-			.bindPopup(message)
-			.addTo(map)
+	
 	</script>
 
 </body>
