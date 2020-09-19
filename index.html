@@ -318,6 +318,7 @@ layer.setStyle({
   fillColor: getColor(props[attributeValue]/props[normValue], breaks)
 });
 });
+}
 function getClassBreaks (dataLayer) {
 // empty array to hold all our values
 var values = [];
@@ -357,7 +358,6 @@ function getColor(d, breaks) {
     return '#045a8d'
   }
 } // end getColor
-
 function drawLegend(breaks){
 
 // create a new Leaflet control object, and position it top left
@@ -403,9 +403,6 @@ if (L.Browser.mobile) {
   });
 };
 }
- 
-}
-
 /* --------------- Toggle on/off info footer content ---------------  */
 var clicked = false // start with false condition
 function myInfo() {
