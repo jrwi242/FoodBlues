@@ -380,15 +380,7 @@ var breaks = clusters.map(function(cluster){
   return [cluster[0],cluster.pop()];
 });
 console.log (breaks); // return Array of your break values
-if (L.Browser.mobile) {
-  // if true use popup
-  layer.bindPopup(toolTipInfo);
-  } else {
-  // if false use tooltip
-  layer.bindTooltip(toolTipInfo, {
-    sticky: true
-  });
-};
+
 } // end getClassBreaks function
 
 function getColor(d, breaks) {
