@@ -371,7 +371,7 @@ dataLayer.eachLayer(function(layer) {
 values.push(value);
 });
 
-console.log(values);
+// console.log(values);
 
 var clusters = ss.ckmeans(values, 5);
 
@@ -379,8 +379,8 @@ var clusters = ss.ckmeans(values, 5);
 var breaks = clusters.map(function(cluster){
   return [cluster[0],cluster.pop()];
 });
-console.log (breaks); // return Array of your break values
 
+return breaks; // return Array of your break values
 } // end getClassBreaks function
 
 function getColor(d, breaks) {
