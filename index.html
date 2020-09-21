@@ -252,7 +252,7 @@
 		var attributeValue = "MedianFamilyIncome",
 		normValue = "POP2010";
 		
-	fetch('data/food_data.geojson')
+	fetch('data/food_acces_ky.geojson')
 	// fetching Census Data
 	.then(function (response) {
 		console.log(response)
@@ -280,7 +280,7 @@ if (response.ok) {
     drawMap(dataLayer);
 	})
 	.then(function () {
-		drawAnotherLayer()
+	// drawAnotherLayer()
 	})
 
 	// define fuction draw another layer
@@ -310,19 +310,6 @@ if (response.ok) {
     zoomControl: false
 }
 var map = L.map('map', options);
-$.getJSON("data/food_data.geojson", function(data) {
-L.geoJson(data, {
-  style: function(feature) {
-    return {
-      color: '#dddddd',
-      weight: 1,
-      fillOpacity: 1,
-      fillColor: '#1f78b4'
-    };
-  }
-}).addTo(map)
-L.geoJson(data).addTo(map);
-});
 
 map.addControl( L.control.zoom({ position: 'topright' }));
   
@@ -340,7 +327,7 @@ map.addControl( L.control.zoom({ position: 'topright' }));
           return {
             color: '#444',
             weight: 2,
-            fillOpacity: 1,
+            fillOpacity: 0,
             interactive: false
           };
         }
@@ -369,6 +356,7 @@ dataLayer.eachLayer(function(layer) {
   var value = props[attributeValue]/props[normValue];
 // push that value to the array
 values.push(value);
+
 });
 
 // console.log(values);
