@@ -37,7 +37,7 @@
 			padding: 10px 15px;
 			/* Add styles to match Leaflet UI elements */
 			background: rgba(256, 256, 256, .3);
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+			box-shadow: 0 1px 3px rgba(112, 111, 111, 0.4);
 			border: 1px solid #ddd;
 			border-radius: 5px;
 			z-index: 800;
@@ -66,8 +66,8 @@
 			padding: 0 15px;
 			/* Add styles to match Leaflet UI elements */
 			background: rgba(256, 256, 256, .3);
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-			border: 1px solid #ddd;
+			box-shadow: 0 1px 3px rgba(88, 86, 86, 0.4);
+			border: 1px solid rgb(31, 28, 28);
 			border-radius: 5px;
 			z-index: 800;
 		}
@@ -249,8 +249,8 @@
 <script src="https://unpkg.com/simple-statistics@7.2.0/dist/simple-statistics.min.js"></script>
      <!-- add jQuery JS script -->
 	<script>
-		var attributeValue = "MedianFamilyIncome",
-		normValue = "POP2010";
+		var attributeValue = "atlas_15_LALOWI1_10, atlas_15_LALOWI1_20, atlas_15_lalowihalf,  atlas_15_lahunv1, atlas_15_lahunv1share",
+		normValue = "atlas_15_POP2010";
 		
 	fetch('data/food_acces_ky.geojson')
 	// fetching Census Data
@@ -271,16 +271,23 @@ if (response.ok) {
         return {
           color: 'white',
           weight: 1,
-          fillOpacity: 1,
+          fillOpacity: 0.6,
           fillColor: '#1f78b4'
         };
-      }
+    
+	     // find zoom extent from new layer
+		 var zoomExtent = dataLayer.getBounds()
+
+
+map.fitBounds(zoomExtent, {
+	maxZoom: 8
+})}
     }).addTo(map)
     // Make call to update map
     drawMap(dataLayer);
 	})
 	.then(function () {
-	// drawAnotherLayer()
+	 drawAnotherLayer()
 	})
 
 	// define fuction draw another layer
@@ -294,46 +301,34 @@ if (response.ok) {
 			L.geoJson(data,{
 				style: function (feature) {
 					return {
-						color: '#444',
+						color: '#222',
 						weight: 2,
-						fillOpacity: 0,
+						fillOpacity: 0.2,
 						interactive: false
 					};
-				}
+				},
+				filter: function (feature) {
+					if (feature.properties.state == "Kentucky") {
+						return feature;
+					}
+				},
+				onEachFeature: function (feature, layer) {
+					var toolTipInfo = layer.feature.properties
+				console.log (toolTipInfo)
+				var popup = `<h2>${toolTipInfo.atlas_15_County}</h2><br>${toolTipInfo.atlas_15_POP2010}`
+				layer.bindPopup(popup)}
+			
 			}).addTo(map)
 		})
 	}
 	var options = {
-    center: [39.8, -98.6],
-    zoom: 4,
-    zoomSnap: .1,
-    zoomControl: false
+    center: [37.8, -84.3],
+    zoom: 7.4,
 }
 var map = L.map('map', options);
 
 map.addControl( L.control.zoom({ position: 'topright' }));
   
-  // Define a function that fetches data and then draws another layer
-  function drawAnotherLayer() {
-    fetch("data/us_states_20m.geojson").then(function (response) {
-      if (response.ok) {
-        // Parse the response as a JSON and return it
-        return response.json() 
-      }
-    })
-    .then(function(data) {
-      L.geoJson(data,{
-        style: function (feature) {
-          return {
-            color: '#444',
-            weight: 2,
-            fillOpacity: 0,
-            interactive: false
-          };
-        }
-      }).addTo(map)
-    })
-  }
 
 function drawMap (dataLayer) {
 var breaks = getClassBreaks(dataLayer);
@@ -344,6 +339,7 @@ layer.setStyle({
 });
 });
 }
+ 
 function getClassBreaks (dataLayer) {
 // empty array to hold all our values
 var values = [];
