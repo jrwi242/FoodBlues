@@ -249,9 +249,9 @@
 <script src="https://unpkg.com/simple-statistics@7.2.0/dist/simple-statistics.min.js"></script>
      <!-- add jQuery JS script -->
 	<script>
-		var attributeValue = "atlas_15_LALOWI1_10, atlas_15_LALOWI1_20, atlas_15_lalowihalf,  atlas_15_lahunv1, atlas_15_lahunv1share",
-		normValue = "atlas_15_POP2010";
 		
+		 var attributeValue =  "atlas_15_LALOWI05_10",
+		 normValue = "atlas_15_County";
 	fetch('data/food_acces_ky.geojson')
 	// fetching Census Data
 	.then(function (response) {
@@ -274,15 +274,10 @@ if (response.ok) {
           fillOpacity: 0.6,
           fillColor: '#1f78b4'
         };
+	  }
+		}).addTo(map)
     
-	     // find zoom extent from new layer
-		 var zoomExtent = dataLayer.getBounds()
-
-
-map.fitBounds(zoomExtent, {
-	maxZoom: 8
-})}
-    }).addTo(map)
+	
     // Make call to update map
     drawMap(dataLayer);
 	})
@@ -311,114 +306,64 @@ map.fitBounds(zoomExtent, {
 					if (feature.properties.state == "Kentucky") {
 						return feature;
 					}
-				},
-				onEachFeature: function (feature, layer) {
-					var toolTipInfo = layer.feature.properties
-				console.log (toolTipInfo)
-				var popup = `<h2>${toolTipInfo.atlas_15_County}</h2><br>${toolTipInfo.atlas_15_POP2010}`
-				layer.bindPopup(popup)}
+				}
 			
 			}).addTo(map)
 		})
 	}
-	var options = {
-    center: [37.8, -84.3],
-    zoom: 7.4,
-}
-var map = L.map('map', options);
 
-map.addControl( L.control.zoom({ position: 'topright' }));
-  
-
-function drawMap (dataLayer) {
-var breaks = getClassBreaks(dataLayer);
-dataLayer.eachLayer(function(layer) {
-var props = layer.feature.properties;
-layer.setStyle({
-  fillColor: getColor(props[attributeValue]/props[normValue], breaks)
-});
-});
-}
- 
-function getClassBreaks (dataLayer) {
-// empty array to hold all our values
-var values = [];
-
-dataLayer.eachLayer(function(layer) {
-  // shorthand refernce to properties (props)
-  var props = layer.feature.properties
-
-  // calculate the normalized value
-  var value = props[attributeValue]/props[normValue];
-// push that value to the array
-values.push(value);
-
-});
-
-// console.log(values);
-
-var clusters = ss.ckmeans(values, 5);
-
-// create an array of the lower values within each cluster
-var breaks = clusters.map(function(cluster){
-  return [cluster[0],cluster.pop()];
-});
-
-return breaks; // return Array of your break values
-} // end getClassBreaks function
-
-function getColor(d, breaks) {
-
-  if(d <= breaks[0][1]) {
-    return '#f1eef6';
-  } else if(d <= breaks[1][1]) {
-    return '#bdc9e1';
-  } else if(d <= breaks[2][1]) {
-    return '#74a9cf';
-  } else if(d <= breaks[3][1]) {
-    return '#2b8cbe'
-  } else if(d <= breaks[4][1]) {
-    return '#045a8d'
+  function drawMap (dataLayer) {
+	  // Draw map
   }
-} // end getColor
+  
+  function getClassBreaks (dataLayer) {
+	  // Get ClassBreaks
+  }
 
-function drawLegend(breaks){
+  function getColor(d, breaks) {
+	  // Color county
+  }
 
-// create a new Leaflet control object, and position it top left
-var legend = L.control({position: 'topleft'});
+  function drawLegend(breaks) {
+	    // create a new Leaflet control object, and position it top left
+		var legend = L.control({ position: 'bottomleft' });
 
 // when the legend is added to the map
 legend.onAdd = function () {
 
-    // create a new HTML <div> element and give it a class name of "legend"
-    var div = L.DomUtil.create('div', 'legend');
+  // create a new HTML <div> element and give it a class name of "legend"
+  var div = L.DomUtil.create('div', 'legend');
 
-    // first append an <h3> tag to the div holding the current attribute
-    // and norm values (i.e., the mapped phenomena)
-    div.innerHTML = `<h3>${attribute} per  ${norm}</h3>`;
+  // first append an <h3> tag to the div holding the current attribute
+  // and norm values (i.e., the mapped phenomena)
+  div.innerHTML = `<h3>${attributeValue} per  ${normValue}</h3>`;
 
-    // for each of our breaks
-    for (var i = 0; i < breaks.length; i++) {
-        // determine the color associated with each break value,
-        // including the lower range value
-        var color = getColor(breaks[i][0], breaks);
+  // for each of our breaks
+  for (var i = 0; i < breaks.length; i++) {
+	// determine the color associated with each break value,
+	// including the lower range value
+	var color = getColor(breaks[i][0], breaks);
 
-        // concatenate a <span> tag styled with the color and the range values
-        // of that class and include a label with the low and a high ends of that class range
-        div.innerHTML +=
-            `<span style="background:${color}"></span>
-            <label>${(breaks[i][0]*100).toLocaleString()}&mdash;
-            ${(breaks[i][1]*100).toLocaleString()}</label>`;
-    }
+	// concatenate a <span> tag styled with the color and the range values
+	// of that class and include a label with the low and a high ends of that class range
+	div.innerHTML +=
+	  `<span style="background:${color}"></span>
+		<label>${(breaks[i][0]).toLocaleString(1)}&mdash;
+		${(breaks[i][1]).toLocaleString(1)}</label>`;
+  }
 
-    // return the populated div to be added to the map
-    return div;
+  // return the populated div to be added to the map
+  return div;
 };
 
 // add the legend to the map
 legend.addTo(map);
 
-}
+  }
+
+
+
+
 
 /* --------------- Toggle on/off info footer content ---------------  */
 var clicked = false // start with false condition
@@ -438,7 +383,6 @@ function myInfo() {
     clicked = !clicked
 
 }
-
 	</script>
 
 </body>
