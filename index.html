@@ -19,10 +19,10 @@
 		body {
 			margin: 0;
 			padding: 0;
-			background: #ddd;
+			background: #222;
 			font-family: 'Quicksand', sans-serif;
 			font-size: 100%;
-			color: #222; /* light */
+			color: #ddd; /* light */
 		}
 
 		h1 {
@@ -219,8 +219,6 @@
 
 	<h1>2015 United States Food Desert Map</h1>
 
-	<div id='map'></div>
-
 	<section id="about">
 		<h2>About this</h2>
 		<p> I wanted to construct a map that focused on an interesting topic. Though not the most lighthearted, food security is especially important nowadays.
@@ -263,8 +261,33 @@ var options = {
 var map = L.map('map', options);
 
 $.getJSON("data/food_acces_ky.json", function(data) {
-L.geoJson(data).addTo(map);
+L.geoJson(data, {
+	style: function(feature) {
+		return {
+			color: '#dddddd',
+			weight: 1,
+			fillOpacity: 1,
+			fillColor: '#1f78b4'
+		}
+	}
+}).addTo(map);
 });
+
+var countyLayer = $.getJSON("data/food_acces_ky.json", function(data) {
+
+	var dataLayer = L.geoJson(data, {
+		style: function(feature) {
+			return {
+color: '#dddddd',
+weight: 1,
+fillOpacity: 1,
+fillColor: '#1f78b4'
+			};
+		}
+	}).addTo(map);
+drawMap(dataLayer);
+});
+
   function drawMap (dataLayer) {
 	var breaks = getClassBreaks(dataLayer);
 
@@ -392,7 +415,5 @@ function myInfo() {
 
 }
 	</script>
-
-</body>
 
 </html>
