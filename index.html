@@ -224,7 +224,7 @@
 	<section id="about">
 		<h2>About this</h2>
 		<p> I wanted to construct a map that focused on an interesting topic. Though not the most lighthearted, food security is especially important nowadays.
-			The data from the USDA <a href="#">Economic Research Service</a>  depicts families and their median income across the United States. </p>
+			The data from the USDA <a href="#">Economic Research Service</a>  depicts families and the possible distance between them and the closest grocery store. </p>
 			<div id='map'></div>
 			<button id="info-button" onclick="myInfo()">Information</button>
 			<div id='footer'>
@@ -250,8 +250,9 @@
      <!-- add jQuery JS script -->
 	<script>
 		
-		 var attributeValue =  "atlas_15_LALOWI05_10",
+		 var attributeValue =  "atlas_15_LALOWI05_10, atlas_15_LALOWI1_10, atlas_15_LALOWI1_20 ",
 		 normValue = "atlas_15_County";
+
 	fetch('data/food_acces_ky.geojson')
 	// fetching Census Data
 	.then(function (response) {
@@ -275,11 +276,11 @@ if (response.ok) {
           fillColor: '#1f78b4'
         };
 	  }
-		}).addTo(map)
+		})
     
 	
     // Make call to update map
-    drawMap(dataLayer);
+  //  drawMap(dataLayer);
 	})
 	.then(function () {
 	 drawAnotherLayer()
@@ -306,27 +307,82 @@ if (response.ok) {
 					if (feature.properties.state == "Kentucky") {
 						return feature;
 					}
-				}
+				},
 			
-			}).addTo(map)
+			})
 		})
 	}
 
   function drawMap (dataLayer) {
-	  // Draw map
+	var breaks = getClassBreaks(dataLayer);
+
+dataLayer.eachLayer(function (layer) {
+
+  var props = layer.feature.properties;
+  var value =  (props[attributeValue] )
+  var color = getColor (value, breaks)
+
+  layer.setStyle({
+	fillColor: getColor(props[attributeValue] / props[normValue], breaks)
+  }),
+layer.on('mouseover', function() {
+layer.setStyle({
+color: 'blue',
+weight: 4,
+}), 
+layer.on('mouseout', function() {
+layer.setStyle({
+color: '#756bb1',
+weight: 0.6,
+})
+})
+});
+
+})
+
+drawLegend(breaks)
+
   }
   
   function getClassBreaks (dataLayer) {
-	  // Get ClassBreaks
+	      // create empty Array for storing values
+		  var values = [];
+
+// loop through all the counties
+dataLayer.eachLayer(function (layer) {
+  var props = layer.feature.properties;
+  if (props[attributeValue] != null) {
+  var value = props[normValue];
+  values.push(value);
   }
+});
+
+// determine similar clusters
+var clusters = ss.ckmeans(values, 5);
+
+// create an array of the lowest value within each cluster
+var breaks = clusters.map(function (cluster) {
+  return [cluster[0], cluster.pop()];
+});
+console.log(values, clusters, breaks);
+return breaks; // return Array of class breaks
+}
+
+
 
   function getColor(d, breaks) {
-	  // Color county
+	if (d <= breaks[0][1]) {
+      return '#edf8b1';
+    } else if (d <= breaks[1][1]) {
+      return '#7fcdbb';
+    } else if (d <= breaks[2][1]) {
+      return '#2c7fb8';
+  }
   }
 
   function drawLegend(breaks) {
 	    // create a new Leaflet control object, and position it top left
-		var legend = L.control({ position: 'bottomleft' });
+		var legend = L.control({ position: 'topleft' });
 
 // when the legend is added to the map
 legend.onAdd = function () {
