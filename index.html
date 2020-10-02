@@ -216,14 +216,14 @@
 </head>
 
 <body>
-
+<div id='map'></div>
 	<h1>2015 United States Food Desert Map</h1>
 
 	<section id="about">
 		<h2>About this</h2>
 		<p> I wanted to construct a map that focused on an interesting topic. Though not the most lighthearted, food security is especially important nowadays.
 			The data from the USDA <a href="#">Economic Research Service</a>  depicts families and the possible distance between them and the closest food resources. </p>
-			<div id='map'></div>
+			
 			<button id="info-button" onclick="myInfo()">Information</button>
 			<div id='footer'>
 				<div><img src="https://uky-gis.github.io/graphics/logo-color-400px.png" class="footer-img">
@@ -233,8 +233,9 @@
 				</div>
 			</div>
 			<p>Map authored by Joyia Williams</p>
+		</footer>
 	</section>
-</body>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -248,11 +249,11 @@
      <!-- add jQuery JS script -->
 	<script>
 		
-		 var attributeValue =  "atlas_15_LALOWI05_10, atlas_15_LALOWI1_10, atlas_15_LALOWI1_20 ",
-		 normValue = "atlas_15_County";
+		 var attributeValue =  "atlas_15_County",
+		 normValue = "MedianFamilyIncome";
 
 var options = {
-	center: [],
+	center: [37.84,-84.27],
 	zoom: 7.4,
 	zoomSnap: .1,
 	zoomControl: false
@@ -260,31 +261,41 @@ var options = {
 }
 var map = L.map('map', options);
 
-$.getJSON("data/food_acces_ky.json", function(data) {
-L.geoJson(data, {
+
+var countyLayer = $.getJSON("data/food_acces_ky.geojson", function(data) {
+
+	var dataLayer = L.geoJson(data, {
+	
 	style: function(feature) {
 		return {
 			color: '#dddddd',
 			weight: 1,
 			fillOpacity: 1,
 			fillColor: '#1f78b4'
-		}
+		};
+	},
+
+	onEachFeature: function (feature, layer) {
+		var prop = layer.feature.properties
+		console.log(prop)
+		var popup = `<h2>${prop.atlas_15_County}County <br> ${prop.atlas_15_POP2010} <br> ${prop.atlas_15_MedianFamilyIncome} </h2>`
+		layer.bindPopup(popup)
+
 	}
-}).addTo(map);
-});
 
-var countyLayer = $.getJSON("data/food_acces_ky.json", function(data) {
+}).addTo(map)
 
-	var dataLayer = L.geoJson(data, {
-		style: function(feature) {
-			return {
-color: '#dddddd',
-weight: 1,
-fillOpacity: 1,
-fillColor: '#1f78b4'
-			};
-		}
-	}).addTo(map);
+var makersGroup = L.featureGroup();
+var startMaker = L.marker([37.84,-84.27]);
+startMaker.addTo(makersGroup);
+map.addLayer(makersGroup);
+
+var zoomExtent = dataLayer.getBounds(options)
+
+//map.fitbounds(zoomExtent, {
+//	maxZoom: 8
+//})
+dataLayer.addTo(map);
 drawMap(dataLayer);
 });
 
@@ -300,11 +311,13 @@ dataLayer.eachLayer(function (layer) {
   layer.setStyle({
 	fillColor: getColor(props[attributeValue] / props[normValue], breaks)
   }),
-layer.on('mouseover', function() {
+
+ layer.on('mouseover', function() {
 layer.setStyle({
 color: 'blue',
 weight: 4,
-}), 
+}),
+
 layer.on('mouseout', function() {
 layer.setStyle({
 color: '#756bb1',
@@ -312,8 +325,7 @@ weight: 0.6,
 })
 })
 });
-
-})
+ }),
 
 drawLegend(breaks)
 
@@ -326,38 +338,42 @@ drawLegend(breaks)
 // loop through all the counties
 dataLayer.eachLayer(function (layer) {
   var props = layer.feature.properties;
-  if (props[attributeValue] != null) {
+  if (props.atlas_15_MedianFamilyIncome != null) {
   var value = props[normValue];
   values.push(value);
   }
 });
 
 // determine similar clusters
-var clusters = ss.ckmeans(values, 3);
+var clusters = ss.ckmeans(values, 5);
 
 // create an array of the lowest value within each cluster
 var breaks = clusters.map(function (cluster) {
   return [cluster[0], cluster.pop()];
 });
-console.log(values, clusters, breaks);
+ console.log(values, clusters, breaks);
 return breaks; // return Array of class breaks
+}
+
+function getColor(d, breaks) {
+    if (d <= breaks[0][1]) {
+      return '#ffffd4';
+    } else if (d <= breaks[1][1]) {
+      return '#fed98e';
+    } else if (d <= breaks[2][1]) {
+      return '#fe9929';
+    } else if (d <= breaks[3][1]) {
+      return '#d95f0e';
+    } else if (d <= breaks[4][1]) {
+      return '#993404';
+    }
 }
 
 
 
-  function getColor(d, breaks) {
-	if (d <= breaks[0][1]) {
-      return '#edf8b1';
-    } else if (d <= breaks[1][1]) {
-      return '#7fcdbb';
-    } else if (d <= breaks[2][1]) {
-      return '#2c7fb8';
-  }
-  }
-
   function drawLegend(breaks) {
 	    // create a new Leaflet control object, and position it top left
-		var legend = L.control({ position: 'topleft' });
+		var legend = L.control({ position: 'bottomright' });
 
 // when the legend is added to the map
 legend.onAdd = function () {
@@ -392,10 +408,6 @@ legend.addTo(map);
 
   }
 
-
-
-
-
 /* --------------- Toggle on/off info footer content ---------------  */
 var clicked = false // start with false condition
 function myInfo() {
@@ -415,5 +427,5 @@ function myInfo() {
 
 }
 	</script>
-
+</body>
 </html>
